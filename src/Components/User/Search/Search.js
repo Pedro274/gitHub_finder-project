@@ -12,6 +12,7 @@ class Search extends Component {
         clear: PropTypes.func.isRequired,
         searchUsers: PropTypes.func.isRequired,
         showClear: PropTypes.bool.isRequired,
+        setAlert: PropTypes.func.isRequired
     };
 
     handleChange = (event) => {
@@ -20,8 +21,12 @@ class Search extends Component {
 
     submit = (event) => {
         event.preventDefault();
-        this.props.searchUsers(this.state.text);
-        this.setState({text: ''});
+        if(this.state.text === '') {
+            this.props.setAlert('Please enter something', 'light')
+        } else {
+            this.props.searchUsers(this.state.text);
+            this.setState({text: ''});
+        }
     };
 
     clearButton = () => {
