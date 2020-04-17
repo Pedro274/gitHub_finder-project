@@ -6,26 +6,29 @@ import axios from 'axios';
 import Search from '../Components/User/Search/Search';
 import Alert from '../Components/Layout/Alert/Alert';
 import About from '../Components/Pages/About/About';
+import OneUser from '../Components/User/OneUser/OneUser';
 import {BrowserRouter, Route, Switch} from "react-router-dom"
 
 class App extends Component {
     state = {
         users: [],
+        user: {},
         loading: false,
         alert: null
     }
-
-    // async componentDidMount() {     this.setState({loading: true})     const res
-    // = await
-    // axios.get(`https://api.github.com/users?client_id=${process.env.REACT_APP_GITH
-    // UB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
-    //    this.setState({users: res.data, loading: false}) }
 
     searchUsers = async(text) => {
         this.setState({loading: true})
         const response = await axios.get(`https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
         this.setState({users: response.data.items, loading: false})
     }
+
+    getUser = async (username) => {
+        this.setState({loading: true})
+        const response = await axios.get(`https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+        this.setState({user: response.data, loading: false})
+    }
+
 
     setAlert = (message, type) => {
         this.setState({alert: {msg: message, type: type}})
@@ -52,6 +55,14 @@ class App extends Component {
                                 </Fragment>)
                             }}/>
                             <Route exact path='/about' component={About} />
+                            <Route exact path='/user/:login' render={props => {
+                                return <OneUser 
+                                    {...props} 
+                                    getUser={(username) => this.getUser(username)}
+                                    user={this.state.user}
+                                    loading={this.state.loading}/>
+                                    
+                            }} />
                         </Switch>
                     </div>
                 </div>
